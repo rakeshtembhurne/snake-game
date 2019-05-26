@@ -14,9 +14,14 @@ class App extends React.Component {
     snake: {
       head: {},
     },
-    currentDirection: 'right'
+    currentDirection: 'right',
   };
-  
+
+  constructor(props) {
+    super(props);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
+
   getRandomGrid() {
     return {
       row: Math.floor((Math.random() * 10) + 1),
@@ -54,49 +59,138 @@ class App extends React.Component {
 
   gameTick() {
     const { currentDirection } = this.state;
-    
+
     // Snake keeps moving
     switch (currentDirection) {
       case 'right':
         this.setState((state) => {
+          const { row, col } = state.snake.head;
           return {
+            ...state,
             snake: {
               head: {
-                row: state.snake.head.row,
-                col: state.snake.head.col + 1,
+                row: row,
+                col: col + 1,
               },
             }
           }
         });
         break;
 
+      case 'left':
+        this.setState((state) => {
+          const { row, col } = state.snake.head;
+          return {
+            ...state,
+            snake: {
+              head: {
+                row: row,
+                col: col - 1,
+              },
+            }
+          }
+        });
+        break;
+
+        case 'up':
+          this.setState((state) => {
+            const { row, col } = state.snake.head;
+            return {
+              ...state,
+              snake: {
+                head: {
+                  row: row - 1,
+                  col: col,
+                },
+              }
+            }
+          });
+          break;
+
+        case 'down':
+          this.setState((state) => {
+            const { row, col } = state.snake.head;
+            return {
+              ...state,
+              snake: {
+                head: {
+                  row: row + 1,
+                  col: col,
+                },
+              }
+            }
+          });
+          break;
+
       default:
         break;
     }
+
     this.resetGrid();
   }
 
+  handleKeyPress(e) {
+    let { currentDirection } = this.state;
+
+    switch (e.keyCode) {
+      case 37:
+        currentDirection = 'left';
+        break;
+
+      case 38:
+          currentDirection = 'up';
+        break;
+
+      case 39:
+          currentDirection = 'right';
+        break;
+
+      case 40:
+          currentDirection = 'down';
+        break;
+
+      default:
+        break;
+    }
+
+    this.resetGrid();
+
+    this.setState(state => {
+      return {
+        ...state,
+        currentDirection
+      }
+    })
+  }
+
   componentDidMount() {
-    // Food 
-    this.setState({ food: this.getRandomGrid() });
+
+    document.body.addEventListener('keydown', this.handleKeyPress);
 
     this.setState({
+      food: this.getRandomGrid(),
       snake: {
         head: this.getCenterOfGrid()
       }
     });
-    
-    this.gameTick();
 
-    setInterval(() => {
+    this.resetGrid();
+
+    // Set tick
+    window.fnInterval = setInterval(() => {
       this.gameTick();
     }, this.state.tickTime);
   }
-  
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleKeyPress);
+    clearInterval(window.fnInterval);
+  }
+
   render () {
     const gridItems = this.state.grid.map((grid) => {
-      return <div 
-        key={grid.row.toString() + '-' + grid.col.toString()} 
+      return <div
+        key={grid.row.toString() + '-' + grid.col.toString()}
         className={
           grid.isHead ? 'gridItem is-head' : grid.isFood ? 'gridItem is-food' : 'gridItem'
         }
