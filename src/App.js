@@ -19,6 +19,9 @@ class App extends React.Component {
       tail: [],
     },
     currentDirection: 'right',
+    die: false,
+    score: 0,
+    scoreFactor: 10,
   };
 
   constructor(props) {
@@ -28,8 +31,8 @@ class App extends React.Component {
 
   getRandomGrid() {
     return {
-      row: Math.floor((Math.random() * 10)),
-      col: Math.floor((Math.random() * 10))
+      row: Math.floor((Math.random() * this.state.rows)),
+      col: Math.floor((Math.random() * this.state.cols))
     }
   }
 
@@ -79,14 +82,17 @@ class App extends React.Component {
   }
 
   gameTick() {
-
     this.setState((state) => {
       let { currentDirection, snake, food } = state;
       let { tail } = snake;
 
-      // Snake moves head
       const { row, col } = state.snake.head;
       let head = { row, col };
+
+      // When game ove is shown, stop the tick
+      if (state.die) {
+        clearInterval(window.fnInterval);
+      }
 
       // Snake eats
       tail.unshift({
@@ -97,11 +103,11 @@ class App extends React.Component {
       // Snake does potty, only when not eating
       if (head.row === state.food.row && head.col === state.food.col) {
         food = this.getRandomGrid();
-        lg({newFood: food})
       } else {
         tail.pop();
       }
 
+      // Snake moves head
       switch (currentDirection) {
         case 'left':
           head.col--;
@@ -129,11 +135,25 @@ class App extends React.Component {
           tail
         }
       }
+
+      // In new state, check if die conditions are met
+      let die = false;
+      if (newState.snake.head.row < 0
+          || newState.snake.head.row >= this.state.rows
+          || newState.snake.head.col < 0
+          || newState.snake.head.col >= this.state.rows
+      ) {
+        die = true;
+      }
+
       const grid = this.resetGrid(newState, true);
+      const score = newState.snake.tail.length * newState.scoreFactor;
 
       return {
         ...newState,
-        grid
+        die,
+        grid,
+        score,
       }
     });
 
@@ -152,14 +172,12 @@ class App extends React.Component {
         break;
 
       case 39:
+      default:
           currentDirection = 'right';
         break;
 
       case 40:
           currentDirection = 'down';
-        break;
-
-      default:
         break;
     }
 
@@ -212,7 +230,7 @@ class App extends React.Component {
   }
 
   render () {
-    const gridItems = this.state.grid.map((grid) => {
+    let gridContent = this.state.grid.map((grid) => {
       return <div
         key={grid.row.toString() + '-' + grid.col.toString()}
         className={
@@ -220,12 +238,19 @@ class App extends React.Component {
           ? 'gridItem is-head' : grid.isTail
           ? 'gridItem is-tail' : grid.isFood
           ? 'gridItem is-food' : 'gridItem'
-        }
-      ></div>
-    })
+        }></div>
+    });
+    if (this.state.die) {
+      gridContent = <div className="grid-message">
+        <h1>Game Over</h1>
+      </div>;
+    }
     return (
       <div className="snake-container">
-        <div className="grid">{gridItems}</div>
+        <div className="grid-header">
+          <h1>Your score: {this.state.score}</h1>
+        </div>
+        <div className="grid">{gridContent}</div>
       </div>
     )
   }
