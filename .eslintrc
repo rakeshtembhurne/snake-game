@@ -1,0 +1,16 @@
+{
+    "extends": "airbnb",
+    "parser": "babel-eslint",
+    "rules": {
+        "comma-dangle": "off",
+        "indent": ["warn", 2],
+        "react/jsx-indent": ["warn", 2, {
+            "checkAttributes": true
+        }],
+        "react/react-in-jsx-scope": "off",
+        "react/destructuring-assignment": "off",
+        "no-nested-ternary": "warn",
+        "react/prop-types": "warn",
+        "react/prefer-stateless-function": "off"
+    }
+}
