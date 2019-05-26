@@ -1,18 +1,22 @@
 import React from 'react';
 import './App.css';
 
-// const log = data => console.log(JSON.stringify(data, null, 2));
+// eslint-disable-next-line
+const log = data => console.log(JSON.stringify(data, null, 2));
+// eslint-disable-next-line
+const lg = data => console.log(JSON.stringify(data));
 
 class App extends React.Component {
 
   state = {
-    tickTime: 2000,
+    tickTime: 1000,
     rows: 10,
     cols: 10,
     grid: [],
     food: {},
     snake: {
       head: {},
+      tail: [],
     },
     currentDirection: 'right',
   };
@@ -24,8 +28,8 @@ class App extends React.Component {
 
   getRandomGrid() {
     return {
-      row: Math.floor((Math.random() * 10) + 1),
-      col: Math.floor((Math.random() * 10) + 1)
+      row: Math.floor((Math.random() * 10)),
+      col: Math.floor((Math.random() * 10))
     }
   }
 
@@ -37,96 +41,102 @@ class App extends React.Component {
     }
   }
 
-  resetGrid() {
+  resetGrid(state = {}, sendBack = false) {
+
+    if (!Object.keys(state).length) {
+      state = this.state;
+    }
+
     const grid = [];
-    const { rows, cols, food, snake } = this.state;
+    const { rows, cols, food, snake } = state;
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const isFood = (food.row === row && food.col === col);
         const isHead = (snake.head.row === row && snake.head.col === col);
+        let isTail = false;
+        snake.tail.forEach(t => {
+          if (t.row === row && t.col === col) {
+            isTail = true;
+          }
+        })
+
         grid.push({
           row,
           col,
           isFood,
           isHead,
+          isTail,
         })
       }
     }
 
-    this.setState({ grid })
+    if (sendBack) {
+      return grid;
+    } else {
+      this.setState({ grid })
+    }
   }
 
   gameTick() {
-    const { currentDirection } = this.state;
 
-    // Snake keeps moving
-    switch (currentDirection) {
-      case 'right':
-        this.setState((state) => {
-          const { row, col } = state.snake.head;
-          return {
-            ...state,
-            snake: {
-              head: {
-                row: row,
-                col: col + 1,
-              },
-            }
-          }
-        });
-        break;
+    this.setState((state) => {
+      let { currentDirection, snake, food } = state;
+      let { tail } = snake;
 
-      case 'left':
-        this.setState((state) => {
-          const { row, col } = state.snake.head;
-          return {
-            ...state,
-            snake: {
-              head: {
-                row: row,
-                col: col - 1,
-              },
-            }
-          }
-        });
-        break;
+      // Snake moves head
+      const { row, col } = state.snake.head;
+      let head = { row, col };
+
+      // Snake eats
+      tail.unshift({
+        row: head.row,
+        col: head.col,
+      })
+
+      // Snake does potty, only when not eating
+      if (head.row === state.food.row && head.col === state.food.col) {
+        food = this.getRandomGrid();
+        lg({newFood: food})
+      } else {
+        tail.pop();
+      }
+
+      switch (currentDirection) {
+        case 'left':
+          head.col--;
+          break;
 
         case 'up':
-          this.setState((state) => {
-            const { row, col } = state.snake.head;
-            return {
-              ...state,
-              snake: {
-                head: {
-                  row: row - 1,
-                  col: col,
-                },
-              }
-            }
-          });
+          head.row--;
           break;
 
         case 'down':
-          this.setState((state) => {
-            const { row, col } = state.snake.head;
-            return {
-              ...state,
-              snake: {
-                head: {
-                  row: row + 1,
-                  col: col,
-                },
-              }
-            }
-          });
+          head.row++;
           break;
 
-      default:
-        break;
-    }
+        case 'right':
+        default:
+          head.col++;
+          break;
+      }
 
-    this.resetGrid();
+      const newState = {
+        ...state,
+        food,
+        snake: {
+          head,
+          tail
+        }
+      }
+      const grid = this.resetGrid(newState, true);
+
+      return {
+        ...newState,
+        grid
+      }
+    });
+
   }
 
   handleKeyPress(e) {
@@ -153,12 +163,17 @@ class App extends React.Component {
         break;
     }
 
-    this.resetGrid();
+    const newState = {
+      ...this.state,
+      currentDirection,
+    }
+    const grid = this.resetGrid(newState, true);
+
 
     this.setState(state => {
       return {
-        ...state,
-        currentDirection
+        ...newState,
+        grid
       }
     })
   }
@@ -167,10 +182,19 @@ class App extends React.Component {
 
     document.body.addEventListener('keydown', this.handleKeyPress);
 
-    this.setState({
-      food: this.getRandomGrid(),
-      snake: {
-        head: this.getCenterOfGrid()
+    this.setState((state) => {
+      const newState = {
+        ...state,
+        food: this.getRandomGrid(),
+        snake: {
+          head: this.getCenterOfGrid(),
+          tail: state.snake.tail
+        }
+      };
+      const grid = this.resetGrid(newState, true);
+      return {
+        ...newState,
+        grid,
       }
     });
 
@@ -192,7 +216,10 @@ class App extends React.Component {
       return <div
         key={grid.row.toString() + '-' + grid.col.toString()}
         className={
-          grid.isHead ? 'gridItem is-head' : grid.isFood ? 'gridItem is-food' : 'gridItem'
+          grid.isHead
+          ? 'gridItem is-head' : grid.isTail
+          ? 'gridItem is-tail' : grid.isFood
+          ? 'gridItem is-food' : 'gridItem'
         }
       ></div>
     })

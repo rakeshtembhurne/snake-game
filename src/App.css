@@ -28,3 +28,7 @@
 .is-head {
   background-color: black;
 }
+
+.is-tail {
+  background-color: grey;
+}
