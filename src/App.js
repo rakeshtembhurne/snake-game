@@ -9,9 +9,9 @@ const lg = data => console.log(JSON.stringify(data));
 class App extends React.Component {
 
   state = {
-    tickTime: 1000,
-    rows: 10,
-    cols: 10,
+    tickTime: 200,
+    rows: 25,
+    cols: 25,
     grid: [],
     food: {},
     snake: {
