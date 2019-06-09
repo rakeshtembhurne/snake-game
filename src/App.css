@@ -1,6 +1,6 @@
 .snake-container {
   width: 100vw;
-  height: 100vh;
+  /* height: 100vh; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,11 +14,11 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  border: 1px solid black;
+  border: 1px solid black !important;
 }
 
 .gridItem {
-  /* outline: 1px solid grey; */
+  outline: 1px solid #eee;
   width: 20px;
   height: 20px;
 }
@@ -38,4 +38,112 @@
 .grid-message {
   width: 100%;
   text-align: center;
+}
+
+
+.navBar {
+  background-color: #4788C7;
+  /* position: fixed; */
+  min-width: 100%;
+}
+
+.logo {
+  /* background-color: #fff; */
+  display: inline-block;
+  height: 45px;
+  width: 45px;
+  margin: 1em 0;
+}
+
+.logo img {
+  width: 45px;
+  height: 45px;
+}
+
+.wrapper {
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 0 2%;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  list-style-type: none;
+  width: 50%;
+}
+
+nav ul a {
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.5s ease;
+}
+
+nav ul a:hover {
+  color: #DFF0FE;
+}
+
+nav li {
+  display: inline-block;
+}
+
+nav #menu-toggle {
+  display: none;
+}
+
+nav .label-toggle {
+  display: none;
+}
+
+nav .wrapper {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 768px) {
+  nav nav ul a {
+    color: #4788C7;
+  }
+
+  nav ul {
+    background-color: #fff;
+    display: block;
+    height: 0;
+    list-style-type: none;
+    opacity: 0;
+    text-align: center;
+    transition: all 1s ease;
+    width: 100%;
+    visibility: hidden;
+    padding-inline-start: 0px;
+  }
+
+  nav li {
+    border-bottom: 2px solid #4788C7;
+    color: #4788C7;
+    display: block;
+    font-size: 1.5em;
+    padding: 2em 0;
+  }
+
+  nav #menu-toggle:checked~ul {
+    opacity: 1;
+    height: 100vh;
+    visibility: visible;
+  }
+
+  nav .label-toggle {
+    background: linear-gradient(to bottom, #fff 0%, #fff 20%, transparent 20%, transparent 40%, #fff 40%, #fff 60%, transparent 60%, transparent 80%, #fff 80%, #fff 100%);
+    cursor: pointer;
+    display: block;
+    float: right;
+    height: 35px;
+    margin-top: 1em;
+    width: 35px;
+  }
+
+  nav .wrapper {
+    display: block;
+  }
 }

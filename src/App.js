@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import logo from './snake.svg';
 
 // eslint-disable-next-line
 const log = data => console.log(JSON.stringify(data, null, 2));
@@ -246,11 +247,26 @@ class App extends React.Component {
       </div>;
     }
     return (
-      <div className="snake-container">
-        <div className="grid-header">
-          <h1>Your score: {this.state.score}</h1>
+      <div>
+        <nav className="navBar">
+          <nav className="wrapper">
+            <div className="logo">
+              <img src={logo} alt="Snake" />
+            </div>
+            <input type="checkbox" id="menu-toggle" />
+              <label htmlFor="menu-toggle" className="label-toggle"></label>
+            <ul>
+              <li><a href="/register">Register</a></li>
+              <li><a href="/login">Login</a></li>
+            </ul>
+          </nav>
+        </nav>
+        <div className="snake-container wrapper">
+          <div className="grid-header">
+            <h1>Your score: {this.state.score}</h1>
+          </div>
+          <div className="grid">{gridContent}</div>
         </div>
-        <div className="grid">{gridContent}</div>
       </div>
     )
   }
