@@ -5,8 +5,10 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+// const isGithub =
+
 ReactDOM.render(
-  <Router>
+  <Router basename="snake-game">
     <App />
   </Router>,
   document.getElementById('root')
