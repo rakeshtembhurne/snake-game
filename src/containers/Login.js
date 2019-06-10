@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Auth } from 'aws-amplify';
 import './Login.css';
 
 export default class Login extends Component {
@@ -18,13 +19,22 @@ export default class Login extends Component {
   }
 
   handleChange = event => {
+    event.persist();
     this.setState({
-      [event.target.id]: event.target.value
+      [event.target.name]: event.target.value
     })
   }
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
+
+    try {
+      await Auth.signIn(this.state.email, this.state.password);
+      this.props.userHasAuthenticated(true);
+      this.props.history.push("/");
+    } catch (e) {
+      alert(e.message);
+    }
   }
 
   render() {
@@ -52,7 +62,7 @@ export default class Login extends Component {
               onChange={this.handleChange}
             />
           </div>
-          <button className="flex-item" disabled={this.validateForm()}>Login</button>
+          <button className="flex-item" disabled={!this.validateForm()}>Login</button>
         </form>
       </div>
     )

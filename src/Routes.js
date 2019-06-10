@@ -1,12 +1,13 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import Game from "./containers/Game";
 import Login from "./containers/Login";
 import NotFound from "./containers/NotFound";
+import AppliedRoute from "./components/AppliedRoute";
 
-export default () =>
+export default ({ childProps }) =>
   <Switch>
-    <Route path="/" exact component={Game} />
-    <Route path="/login" exact component={Login} />
-    <Route component={NotFound} />
-  </Switch>;
+    <AppliedRoute path="/" exact component={Game} props={childProps} />
+    <AppliedRoute path="/login" exact component={Login} props={childProps} />
+    <AppliedRoute component={NotFound} />
+  </Switch>
