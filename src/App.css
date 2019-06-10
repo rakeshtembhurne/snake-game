@@ -5,16 +5,16 @@
 }
 
 .logo {
-  /* background-color: #fff; */
   display: inline-block;
-  height: 45px;
-  width: 45px;
-  margin: 1em 0;
+  margin: 5px 0;
 }
 
 .logo img {
   width: 45px;
   height: 45px;
+  background-color: #fff;
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .wrapper {
